@@ -129,7 +129,7 @@ class Constants:
     EMAIL_SUBJECT_HEADER = ""
     EMAIL_LOGIN = ""
     EMAIL_PASSWORD = ""
-s
+
 
 class OSmanipulation(object):
     """Contains methods for OSmanipulation:
