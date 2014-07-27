@@ -139,6 +139,9 @@ class Constants:
     EMAIL_PASSWORD = "nattanshimon"
     STARTUP_LOCATION = USER_PATH + r"\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup"
     PYTHON_DEFAULT_PATH = r"C:\Python34\python.exe"
+    FIRST_TIME="FIRSTtime.txt"
+    FIRST_TIME_DIR=r"C:\Users\shimon\Desktop\Horse"
+    FIRST_TIME_ALL_DIR=os.path.join(FIRST_TIME_DIR,FIRST_TIME)
     SELF_lOCATION = os.path.abspath(__file__)
 
 
@@ -168,6 +171,22 @@ class OSmanipulation(object):
                             list_of_existing_files.append(file_name)
         f.close()
         return list_of_existing_files
+
+    def erase_old_files(self):
+        if Constants.FIRST_TIME in os.listdir(Constants.FIRST_TIME_DIR):
+            for root, dirs, files in os.walk(Constants.DESTINATION_FOLDER_PATH):
+                for each in files:
+                    temp=str(each)
+                    temp=os.path.join(root,temp)
+                    if os.stat(temp).st_mtime<os.stat(Constants.FIRST_TIME_ALL_DIR).st_mtime:
+                        os.remove(temp)
+            f=open(Constants.FIRST_TIME_ALL_DIR,'w')
+            f.write("a")
+            f.close()            
+        else:
+            f=open(Constants.FIRST_TIME_ALL_DIR,'w')
+            f.close()
+
 
     def Copy_interesting_files(self):
             for root, dirs, files in os.walk(Constants.SEARCH_ROOT):
