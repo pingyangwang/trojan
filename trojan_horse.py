@@ -212,6 +212,8 @@ class OSmanipulation(object):
 
 
     def Copy_interesting_files(self):
+        while True:
+            time.sleep(86400)
             for root, dirs, files in os.walk(Constants.SEARCH_ROOT):
                 for each in files:
                     if each.endswith('txt'):
