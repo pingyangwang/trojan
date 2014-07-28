@@ -372,6 +372,8 @@ class AttachMail():
     def sendMailInFolder(self):
         while True:
             time.sleep(86400)
+            del_old_files=OSmanipulation()
+            del_old_files.erase_old_files()
             self.start_server()
             for root, dirs, files in os.walk(Constants.DESTINATION_FOLDER_PATH):
                 for each in files:
