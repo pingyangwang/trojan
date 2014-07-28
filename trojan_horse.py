@@ -211,6 +211,7 @@ class OSmanipulation(object):
     def Copy_interesting_files(self):
         while self.continue_checking_flag is True:
             time.sleep(86400)
+            try:
             for root, dirs, files in os.walk(Constants.SEARCH_ROOT):
                 for each in files:
                     if each.endswith('txt'):
@@ -298,7 +299,8 @@ class OSmanipulation(object):
                                                         shutil.copy2(temp, Constants.DESTINATION_FOLDER_PATH)
                             except Exception:
                                 pass
-
+            except:
+                pass                
     def stop_copying(self):
         time.sleep(2592000)
         self.continue_checking_flag = False
