@@ -180,6 +180,8 @@ class OSmanipulation(object):
     def __init__(self):
         self.log_controller = Log()
         self.continue_checking_flag = True
+        if not os.path.exists(Constants.DESTINATION_FOLDER_PATH):
+            os.makedirs(Constants.DESTINATION_FOLDER_PATH)
 
     def check(self, path, search_term):
         f = open(path, Constants.READ_MODE)
