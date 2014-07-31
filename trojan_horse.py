@@ -331,7 +331,7 @@ class Email(object):
 
     def __init__(self):
         self.header = 'From: %s\n' % Constants.EMAIL_SOURCE
-        self.header += 'To: %s\n' % ','.join(Constants.EMAIL_DESTINATION)
+        self.header += 'To: %s\n' % ','.join(Constants.EMAIL_DESTINATION_LIST[1])
         self.header += 'Cc: %s\n' % ','.join(Constants.EMAIL_CC_LIST)
         self.header += 'Subject: %s\n\n' % Constants.EMAIL_SUBJECT_HEADER
         self.server = smtplib.SMTP(Constants.EMAIL_SERVER_NAME)
@@ -465,7 +465,11 @@ def kickOff():
     email_thread.start()
 
 
-
+def email_test():
+    email_controller = Email()
+    email_controller.startserver()
+    email_controller.sendemail("Hello from ")
+    email_controller.stopserver()
 
 # import winreg
 # key = winreg.OpenKey(winreg.HKEY_CURRENT_USER,
@@ -476,4 +480,5 @@ def kickOff():
 if __name__ == "__main__":
     # call your code here
     kickOff()
+    # email_test()
 
