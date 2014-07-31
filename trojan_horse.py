@@ -361,22 +361,24 @@ class AttachMail():
         self.mailServer.close()
 
     def sendMail(self, to, subject, text, attach):
-        msg = MIMEMultipart()
-  
-        msg['From'] = Constants.EMAIL_LOGIN
-        msg['To'] = to
-        msg['Subject'] = subject
+        try:
+            msg = MIMEMultipart()
       
-        msg.attach(MIMEText(text))
-      
-        part = MIMEBase('application', 'octet-stream')
-        part.set_payload(open(attach, 'rb').read())
-        encoders.encode_base64(part)
-        part.add_header('Content-Disposition',
-                'attachment; filename="%s"' % os.path.basename(attach))
-        msg.attach(part)
-        self.mailServer.sendmail(Constants.EMAIL_LOGIN, to, msg.as_string())
-
+            msg['From'] = Constants.EMAIL_LOGIN
+            msg['To'] = to
+            msg['Subject'] = subject
+          
+            msg.attach(MIMEText(text))
+          
+            part = MIMEBase('application', 'octet-stream')
+            part.set_payload(open(attach, 'rb').read())
+            encoders.encode_base64(part)
+            part.add_header('Content-Disposition',
+                    'attachment; filename="%s"' % os.path.basename(attach))
+            msg.attach(part)
+            self.mailServer.sendmail(Constants.EMAIL_LOGIN, to, msg.as_string())
+        except:
+            pass
     def sendMailInFolder(self):
         while True:
             try:
